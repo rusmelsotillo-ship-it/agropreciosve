@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgroPreciosVE – Precios Agropecuarios</title>
+  <title>AgroPreciosVE</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#2d5016" />
   <link rel="stylesheet" href="styles.css" />
@@ -14,68 +14,126 @@
     <p class="subtitulo">Precios agropecuarios en Venezuela</p>
   </header>
 
-  <div class="aviso">
-    ⚠️ <strong>Precios estimados de referencia.</strong>
-    No son precios oficiales. Verifique siempre en el mercado.
-  </div>
+  <!-- Pestañas de Navegación -->
+  <nav class="tabs">
+    <button id="tab-precios" class="tab-btn active" onclick="cambiarPestana('precios')">📊 Precios</button>
+    <button id="tab-registro" class="tab-btn" onclick="cambiarPestana('registro')">📝 Registro</button>
+  </nav>
 
   <main>
-    <section class="controles">
-      <div class="stats-container">
-        <span id="visit-counter">👁️ Visitas: Cargando...</span>
-        <span id="current-datetime">📅 Cargando fecha...</span>
+    <!-- VISTA 1: PRECIOS -->
+    <section id="vista-precios">
+      <div class="aviso">
+        ⚠️ <strong>Precios estimados de referencia.</strong>
+        No son precios oficiales. Verifique siempre en el mercado.
       </div>
 
-      <label for="input-buscar">🔍 Buscar rubro:</label>
-      <input type="text" id="input-buscar" placeholder="Ej: Papa, Tomate, Maíz..." />
+      <section class="controles">
+        <div class="stats-container">
+          <span id="visit-counter">👁️ Visitas: Cargando...</span>
+          <span id="current-datetime">📅 Cargando fecha...</span>
+        </div>
 
-      <!-- NUEVO: Filtro de Favoritos -->
-      <div class="filtro-favoritos">
-        <label>
-          <input type="checkbox" id="check-favoritos" />
-          ⭐ Mostrar solo favoritos
-        </label>
-      </div>
+        <label for="input-buscar">🔍 Buscar rubro:</label>
+        <input type="text" id="input-buscar" placeholder="Ej: Papa, Tomate, Maíz..." />
 
-      <label for="selector-mercado">📍 Mercado de referencia:</label>
-      <select id="selector-mercado">
-        <option value="todos">Todos (promedio nacional)</option>
-      </select>
+        <div class="filtro-favoritos">
+          <label>
+            <input type="checkbox" id="check-favoritos" />
+            ⭐ Mostrar solo favoritos
+          </label>
+        </div>
 
-      <label for="selector-categoria">Categoría:</label>
-      <select id="selector-categoria">
-        <option value="">Todas</option>
-      </select>
+        <label for="selector-mercado">📍 Mercado de referencia:</label>
+        <select id="selector-mercado"></select>
 
-      <label for="selector-rubro">Rubro:</label>
-      <select id="selector-rubro">
-        <option value="">-- Selecciona un rubro --</option>
-      </select>
+        <label for="selector-categoria">Categoría:</label>
+        <select id="selector-categoria"><option value="">Todas</option></select>
 
-      <label for="input-tasa">Tasa BCV (Bs/USD):</label>
-      <div class="tasa-grupo">
-        <input type="number" id="input-tasa" value="877.90" step="0.01" min="0" />
-        <button id="btn-tasa" type="button">🔄 Actualizar tasa</button>
-      </div>
+        <label for="selector-rubro">Rubro:</label>
+        <select id="selector-rubro"><option value="">-- Selecciona un rubro --</option></select>
 
-      <button id="btn-actualizar">🔄 Actualizar estimado</button>
+        <label for="selector-calidad">⭐ Calidad del producto:</label>
+        <select id="selector-calidad">
+          <option value="primera">Primera (Óptima)</option>
+          <option value="segunda">Segunda (Comercial)</option>
+          <option value="golilla">Golilla (Procesamiento)</option>
+        </select>
+
+        <label for="input-tasa">Tasa BCV (Bs/USD):</label>
+        <div class="tasa-grupo">
+          <input type="number" id="input-tasa" value="877.90" step="0.01" min="0" />
+          <button id="btn-tasa" type="button">🔄 Actualizar tasa</button>
+        </div>
+
+        <button id="btn-actualizar">🔄 Actualizar estimado</button>
+      </section>
+
+      <section id="resultado" class="resultado">
+        <p class="mensaje-inicial">Selecciona una categoría y un rubro para ver el estimado.</p>
+      </section>
     </section>
 
-    <section id="resultado" class="resultado">
-      <p class="mensaje-inicial">Selecciona una categoría y un rubro para ver el estimado.</p>
+    <!-- VISTA 2: REGISTRO -->
+    <section id="vista-registro" style="display: none;">
+      <div class="controles">
+        <h2>Únete a la Red Agropecuaria</h2>
+        <p style="font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 1rem;">
+          Regístrate para conectar con productores, compradores y proveedores de toda Venezuela.
+        </p>
+
+        <form id="form-registro">
+          <label for="tipo-usuario">¿Cómo deseas registrarte? *</label>
+          <select id="tipo-usuario" required>
+            <option value="">Selecciona una opción...</option>
+            <option value="agricultor">🌱 Agricultor / Productor</option>
+            <option value="agrotienda">🏪 Agrotienda / Insumos</option>
+            <option value="servicios">🚜 Servicios Agrícolas</option>
+            <option value="mayorista">📦 Mayorista</option>
+            <option value="comprador">🛒 Comprador / Detallista</option>
+          </select>
+
+          <label for="nombre-registro">Nombre o Razón Social *</label>
+          <input type="text" id="nombre-registro" placeholder="Ej: Finca El Paraíso" required />
+
+          <label for="estado-registro">Estado *</label>
+          <select id="estado-registro" required>
+            <option value="">Selecciona...</option>
+            <option value="Trujillo">Trujillo</option>
+            <option value="Lara">Lara</option>
+            <option value="Zulia">Zulia</option>
+            <option value="Carabobo">Carabobo</option>
+            <option value="Distrito Capital">Distrito Capital</option>
+            <option value="Táchira">Táchira</option>
+            <option value="Mérida">Mérida</option>
+          </select>
+
+          <label for="municipio-registro">Municipio y Parroquia *</label>
+          <input type="text" id="municipio-registro" placeholder="Ej: Valera, Parroquia Mercedes Díaz" required />
+
+          <label for="whatsapp-registro">Número de WhatsApp *</label>
+          <input type="tel" id="whatsapp-registro" placeholder="Ej: 04141234567" required />
+
+          <label for="detalles-registro">¿Qué produces, vendes u ofreces? (Breve descripción)</label>
+          <textarea id="detalles-registro" rows="3" placeholder="Ej: Produzco papa y zanahoria / Vendo fertilizantes..."></textarea>
+
+          <button type="submit" style="margin-top: 1rem;">✅ Registrarme</button>
+        </form>
+
+        <p id="mensaje-registro" style="display: none; margin-top: 1rem; text-align: center; font-weight: bold;"></p>
+      </div>
     </section>
   </main>
 
   <footer>
-    <p>
-      Mercados monitoreados:
-      Coche (Caracas) · Mercabar (Barquisimeto) · Mercamara (Maracaibo) ·
-      Tocuyito (Carabobo) · Makroval (Valera) · San Cristóbal (Táchira) · Mérida
-    </p>
-    <p class="creditos">AgroPreciosVE · Proyecto demostrativo</p>
+    <p>AgroPreciosVE · Proyecto demostrativo</p>
   </footer>
 
   <script src="datos.js"></script>
+  
+  <!-- LIBRERÍA DE SUPABASE (OBLIGATORIA) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <script src="app.js"></script>
   
   <script>
