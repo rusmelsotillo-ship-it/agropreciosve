@@ -1,0 +1,116 @@
+{
+  "tasa_bcv": 40.00,
+  "nota": "Precios DEMOSTRATIVOS de referencia. No son precios oficiales. Deben actualizarse manualmente consultando los mercados mayoristas.",
+  "rubros": [
+    {
+      "id": "papa",
+      "nombre": "Papa",
+      "unidad": "saco 45 kg",
+      "ajuste_temporada": 0,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 18.50, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 17.80, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 19.20, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "tomate",
+      "nombre": "Tomate",
+      "unidad": "cesta 20 kg",
+      "ajuste_temporada": 5,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 12.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 11.50, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 13.00, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "cebolla",
+      "nombre": "Cebolla",
+      "unidad": "saco 20 kg",
+      "ajuste_temporada": -3,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 14.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 13.50, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 14.80, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "zanahoria",
+      "nombre": "Zanahoria",
+      "unidad": "saco 20 kg",
+      "ajuste_temporada": 0,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 10.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 9.50, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 10.50, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "platano",
+      "nombre": "Plátano",
+      "unidad": "caja 20 kg",
+      "ajuste_temporada": 2,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 8.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 7.50, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 8.50, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "yuca",
+      "nombre": "Yuca",
+      "unidad": "saco 50 kg",
+      "ajuste_temporada": 0,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 15.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 14.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 15.50, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "caraota",
+      "nombre": "Caraota negra",
+      "unidad": "saco 45 kg",
+      "ajuste_temporada": -2,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 35.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 33.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 36.00, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "arroz",
+      "nombre": "Arroz blanco",
+      "unidad": "saco 45 kg",
+      "ajuste_temporada": 0,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 28.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 27.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 29.00, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "maiz",
+      "nombre": "Maíz amarillo",
+      "unidad": "saco 45 kg",
+      "ajuste_temporada": 3,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 20.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 19.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 21.00, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    },
+    {
+      "id": "aguacate",
+      "nombre": "Aguacate",
+      "unidad": "caja 10 kg",
+      "ajuste_temporada": 0,
+      "mercados": [
+        { "mercado": "Coche (Caracas)", "precio_usd": 16.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercabar (Barquisimeto)", "precio_usd": 15.00, "precio_bs": 0, "fecha": "2026-10-13" },
+        { "mercado": "Mercamara (Maracaibo)", "precio_usd": 17.00, "precio_bs": 0, "fecha": "2026-10-13" }
+      ]
+    }
+  ]
+}
