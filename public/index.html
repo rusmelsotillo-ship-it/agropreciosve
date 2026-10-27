@@ -129,17 +129,32 @@
     <p>AgroPreciosVE · Proyecto demostrativo</p>
   </footer>
 
+  <!-- Carga de datos -->
   <script src="datos.js"></script>
   
-  <!-- LIBRERÍA DE SUPABASE (OBLIGATORIA) -->
+  <!-- Librería de Supabase (Obligatoria antes de app.js) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
+  <!-- Lógica de la app -->
   <script src="app.js"></script>
   
+  <!-- Script de Auto-Actualización de PWA -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error', err));
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          reg.onupdatefound = () => {
+            const installingWorker = reg.installing;
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  console.log('¡Nueva versión detectada! Recargando app...');
+                  window.location.reload(); // Recarga automáticamente
+                }
+              }
+            };
+          };
+        }).catch(err => console.log('SW error', err));
       });
     }
   </script>
