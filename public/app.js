@@ -1,7 +1,3 @@
-// ============================================================
-// AgroPreciosVE - Lógica del frontend
-// ============================================================
-
 const selectorMercado = document.getElementById('selector-mercado');
 const selectorCategoria = document.getElementById('selector-categoria');
 const selectorRubro = document.getElementById('selector-rubro');
@@ -25,10 +21,8 @@ function normalizarTexto(texto) {
   return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-// ------------------------------------------------------------
-// SISTEMA DE PESTAÑAS (Navegación)
-// ------------------------------------------------------------
-function cambiarPestana(pestana) {
+// SISTEMA DE PESTAÑAS
+window.cambiarPestana = function(pestana) {
   const vistaPrecios = document.getElementById('vista-precios');
   const vistaRegistro = document.getElementById('vista-registro');
   const btnPrecios = document.getElementById('tab-precios');
@@ -47,16 +41,12 @@ function cambiarPestana(pestana) {
   }
 }
 
-// ------------------------------------------------------------
-// CONEXIÓN A SUPABASE (Registro)
-// ------------------------------------------------------------
+// CONEXIÓN A SUPABASE
 const SUPABASE_URL = 'https://xfumgbxmjzognpscwxp.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmdW1nYnhtanpvZ25wc2N3eGdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMjI1OTUsImV4cCI6MjEwODY5ODU5NX0.fyJOToOCLnfykOWtsqyQT0yNVjb2sctx4rlZnCA9i_w';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 document.getElementById('form-registro').addEventListener('submit', async function(e) {
   e.preventDefault();
-
   const btnSubmit = this.querySelector('button[type="submit"]');
   btnSubmit.disabled = true;
   btnSubmit.textContent = '⏳ Guardando...';
@@ -71,7 +61,9 @@ document.getElementById('form-registro').addEventListener('submit', async functi
   };
 
   try {
-    const { data, error } = await supabase.from('usuarios').insert([nuevoUsuario]);
+    if (!window.supabase) throw new Error("Falta conexión a internet o librería.");
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { error } = await supabaseClient.from('usuarios').insert([nuevoUsuario]);
     if (error) throw error;
 
     const msj = document.getElementById('mensaje-registro');
@@ -80,40 +72,31 @@ document.getElementById('form-registro').addEventListener('submit', async functi
     msj.style.display = 'block';
     this.reset();
   } catch (error) {
-    console.error("Error al registrar:", error.message);
     const msj = document.getElementById('mensaje-registro');
-    msj.textContent = "Hubo un error al guardar. Intenta de nuevo.";
+    msj.textContent = "Error: " + error.message;
     msj.style.color = "red";
     msj.style.display = 'block';
   } finally {
     btnSubmit.disabled = false;
     btnSubmit.textContent = '✅ Registrarme';
-    setTimeout(() => { document.getElementById('mensaje-registro').style.display = 'none'; }, 4000);
+    setTimeout(() => { document.getElementById('mensaje-registro').style.display = 'none'; }, 5000);
   }
 });
 
-// ------------------------------------------------------------
-// OBTENER TASA BCV
-// ------------------------------------------------------------
+// TASA BCV
 async function obtenerTasaBCV() {
   if (btnTasa) { btnTasa.disabled = true; btnTasa.textContent = '⏳ Consultando...'; }
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
-
   try {
-    const resp = await fetch('/api/tasa-bcv', { signal: controller.signal });
-    clearTimeout(timeoutId);
+    const resp = await fetch('/api/tasa-bcv');
     const data = await resp.json();
-
     if (data.ok && data.tasa) {
       inputTasa.value = data.tasa.toFixed(2);
       if (btnTasa) {
         btnTasa.textContent = '✅ Actualizada';
         setTimeout(() => { btnTasa.textContent = '🔄 Actualizar tasa'; btnTasa.disabled = false; }, 2000);
       }
-    } else { throw new Error('Respuesta inválida'); }
+    }
   } catch (error) {
-    clearTimeout(timeoutId);
     if (btnTasa) {
       btnTasa.textContent = '⚠️ Manual';
       setTimeout(() => { btnTasa.textContent = '🔄 Actualizar tasa'; btnTasa.disabled = false; }, 2000);
@@ -121,9 +104,7 @@ async function obtenerTasaBCV() {
   }
 }
 
-// ------------------------------------------------------------
-// CARGAR SELECTORES Y FILTROS
-// ------------------------------------------------------------
+// CARGAR SELECTORES
 function cargarMercados() {
   selectorMercado.innerHTML = '';
   DATOS_AGRO.mercados.forEach(m => {
@@ -135,7 +116,7 @@ function cargarMercados() {
 }
 
 function cargarCategorias() {
-  selectorCategoria.innerHTML = '<option value="">Todas las categorías</option>';
+  selectorCategoria.innerHTML = '<option value="">Todas</option>';
   DATOS_AGRO.categorias.forEach(cat => {
     const opt = document.createElement('option');
     opt.value = cat; opt.textContent = cat;
@@ -144,16 +125,16 @@ function cargarCategorias() {
 }
 
 function cargarRubros() {
-  const categoriaFiltro = selectorCategoria.value;
-  const textoBusqueda = normalizarTexto(inputBuscar.value);
-  const soloFavoritos = checkFavoritos.checked;
+  const cat = selectorCategoria.value;
+  const txt = normalizarTexto(inputBuscar.value);
+  const fav = checkFavoritos.checked;
 
   let filtrados = DATOS_AGRO.rubros;
-  if (soloFavoritos) filtrados = filtrados.filter(r => favoritos.includes(r.id));
-  if (categoriaFiltro) filtrados = filtrados.filter(r => r.categoria === categoriaFiltro);
-  if (textoBusqueda) filtrados = filtrados.filter(r => normalizarTexto(r.nombre).includes(textoBusqueda));
+  if (fav) filtrados = filtrados.filter(r => favoritos.includes(r.id));
+  if (cat) filtrados = filtrados.filter(r => r.categoria === cat);
+  if (txt) filtrados = filtrados.filter(r => normalizarTexto(r.nombre).includes(txt));
 
-  selectorRubro.innerHTML = '<option value="">-- Selecciona un rubro --</option>';
+  selectorRubro.innerHTML = '<option value="">-- Selecciona --</option>';
   filtrados.forEach(r => {
     const opt = document.createElement('option');
     opt.value = r.id;
@@ -163,160 +144,105 @@ function cargarRubros() {
   return filtrados;
 }
 
-// ------------------------------------------------------------
-// LÓGICA DE PRECIOS Y TARJETA
-// ------------------------------------------------------------
+// PRECIOS Y TARJETA
 function calcularPrecio(rubro, mercado, calidad) {
-  let precioBase = 0;
+  let base = 0;
   if (mercado === 'todos') {
-    const valores = Object.values(rubro.precios).filter(v => v > 0);
-    if (valores.length === 0) return 0;
-    precioBase = valores.reduce((a, b) => a + b, 0) / valores.length;
+    const val = Object.values(rubro.precios).filter(v => v > 0);
+    if (val.length === 0) return 0;
+    base = val.reduce((a, b) => a + b, 0) / val.length;
   } else {
     const clave = MAPA_MERCADOS[mercado];
     if (!clave) return 0;
-    precioBase = rubro.precios[clave] || 0;
+    base = rubro.precios[clave] || 0;
   }
-  if (calidad === 'segunda') return +(precioBase * 0.80).toFixed(2);
-  if (calidad === 'golilla') return +(precioBase * 0.50).toFixed(2);
-  return +precioBase.toFixed(2);
+  if (calidad === 'segunda') return +(base * 0.80).toFixed(2);
+  if (calidad === 'golilla') return +(base * 0.50).toFixed(2);
+  return +base.toFixed(2);
 }
 
-function mostrarEstimado(idRubro) {
-  if (!idRubro) {
-    resultado.innerHTML = '<p class="mensaje-inicial">Selecciona un rubro para ver el estimado.</p>';
+function mostrarEstimado(id) {
+  if (!id) {
+    resultado.innerHTML = '<p class="mensaje-inicial">Selecciona un rubro.</p>';
     return;
   }
-
   const tasa = parseFloat(inputTasa.value) || DATOS_AGRO.tasa_bcv;
   const mercado = selectorMercado.value;
   const calidad = selectorCalidad.value;
-  const rubro = DATOS_AGRO.rubros.find(r => r.id === idRubro);
-
+  const rubro = DATOS_AGRO.rubros.find(r => r.id === id);
   if (!rubro) return;
 
-  const precioUSD = calcularPrecio(rubro, mercado, calidad);
-  const precioBs = +(precioUSD * tasa).toFixed(2);
-  const etiquetaMercado = mercado === 'todos' ? 'Promedio nacional' : mercado;
-  
-  let etiquetaCalidad = "Primera";
-  if (calidad === 'segunda') etiquetaCalidad = "Segunda";
-  if (calidad === 'golilla') etiquetaCalidad = "Golilla";
+  const pUSD = calcularPrecio(rubro, mercado, calidad);
+  const pBs = +(pUSD * tasa).toFixed(2);
+  const etMercado = mercado === 'todos' ? 'Promedio nacional' : mercado;
+  let etCalidad = calidad === 'segunda' ? "Segunda" : calidad === 'golilla' ? "Golilla" : "Primera";
 
-  const esFavorito = favoritos.includes(rubro.id);
-  const claseEstrella = esFavorito ? 'activo' : '';
+  const claseEstrella = favoritos.includes(rubro.id) ? 'activo' : '';
   const claseDestacado = mercado === '🌾 Puerta de Finca' ? 'destacado-finca' : '';
 
   const mercadosHTML = DATOS_AGRO.mercados.map(m => {
-    const clave = MAPA_MERCADOS[m.nombre];
-    const p = rubro.precios[clave] || 0;
-    let pFinal = p;
-    if (calidad === 'segunda') pFinal = p * 0.8;
-    if (calidad === 'golilla') pFinal = p * 0.5;
-
-    const seleccionado = (mercado === m.nombre) ? ' seleccionado' : '';
-    const precioTexto = pFinal > 0 ? `$${pFinal.toFixed(2)}` : '—';
-    return `<li class="${seleccionado}"><span class="nombre-mercado">${m.nombre}</span><span class="precio-mercado">${precioTexto}</span></li>`;
+    const c = MAPA_MERCADOS[m.nombre];
+    let p = rubro.precios[c] || 0;
+    if (calidad === 'segunda') p *= 0.8;
+    if (calidad === 'golilla') p *= 0.5;
+    const sel = (mercado === m.nombre) ? ' seleccionado' : '';
+    return `<li class="${sel}"><span class="nombre-mercado">${m.nombre}</span><span class="precio-mercado">${p > 0 ? '$'+p.toFixed(2) : '—'}</span></li>`;
   }).join('');
-
-  const textoWsp = encodeURIComponent(
-    `🌾 *AgroPreciosVE* - ${rubro.nombre} (${etiquetaCalidad})\n\n` +
-    `📍 *Precio seleccionado (${etiquetaMercado}):* $${precioUSD.toFixed(2)}\n` +
-    `💵 Equivalente: Bs ${precioBs.toFixed(2)}\n(Tasa BCV: ${tasa})\n\n_Consulte más precios en AgroPreciosVE_`
-  );
 
   resultado.innerHTML = `
     <div class="tarjeta-rubro">
       <button class="btn-estrella ${claseEstrella}" data-id="${rubro.id}">★</button>
       <p class="categoria-etiqueta">${rubro.categoria}</p>
-      <h2>${rubro.nombre} <span style="font-size:0.7em; color:var(--texto-suave);">(${etiquetaCalidad})</span></h2>
+      <h2>${rubro.nombre} <span style="font-size:0.7em; color:var(--texto-suave);">(${etCalidad})</span></h2>
       <p class="unidad">Unidad: ${rubro.unidad}</p>
-      <p class="mercado-referencia">📍 ${etiquetaMercado}</p>
+      <p class="mercado-referencia">📍 ${etMercado}</p>
       <div class="precio-principal ${claseDestacado}">
-        <span class="usd">$${precioUSD.toFixed(2)}</span>
-        <span class="bs">Bs ${precioBs.toFixed(2)}</span>
+        <span class="usd">$${pUSD.toFixed(2)}</span>
+        <span class="bs">Bs ${pBs.toFixed(2)}</span>
       </div>
-      <h3 class="titulo-mercados">Precios por mercado (${etiquetaCalidad})</h3>
+      <h3 class="titulo-mercados">Mercados</h3>
       <ul class="mercados">${mercadosHTML}</ul>
-      <p class="fecha-actualizacion">Fecha de datos: ${rubro.fecha || 'sin fecha'} · Tasa: ${tasa} Bs/USD</p>
-      <p class="fecha-actualizacion">⚠️ Precio estimado de referencia.</p>
-      <a href="https://wa.me/?text=${textoWsp}" target="_blank" class="btn-wsp">📲 Compartir por WhatsApp</a>
+      <p class="fecha-actualizacion">Tasa: ${tasa} Bs/USD</p>
+      <a href="https://wa.me/?text=Precio de ${rubro.nombre}: $${pUSD.toFixed(2)}" target="_blank" class="btn-wsp">📲 Compartir</a>
     </div>
   `;
-
-  const btnEstrella = document.querySelector('.btn-estrella');
-  if (btnEstrella) btnEstrella.addEventListener('click', (e) => toggleFavorito(e.target.dataset.id));
+  document.querySelector('.btn-estrella').addEventListener('click', (e) => {
+    if (favoritos.includes(rubro.id)) favoritos = favoritos.filter(f => f !== rubro.id);
+    else favoritos.push(rubro.id);
+    localStorage.setItem('agroprecios_favoritos', JSON.stringify(favoritos));
+    mostrarEstimado(rubro.id);
+    cargarRubros();
+  });
 }
 
-function toggleFavorito(id) {
-  if (favoritos.includes(id)) favoritos = favoritos.filter(favId => favId !== id);
-  else favoritos.push(id);
-  localStorage.setItem('agroprecios_favoritos', JSON.stringify(favoritos));
-  mostrarEstimado(id);
-  cargarRubros();
-}
-
-// ------------------------------------------------------------
-// EVENTOS
-// ------------------------------------------------------------
+// EVENTOS E INICIO
 selectorMercado.addEventListener('change', () => mostrarEstimado(selectorRubro.value));
 selectorCalidad.addEventListener('change', () => mostrarEstimado(selectorRubro.value));
-
-selectorCategoria.addEventListener('change', () => {
-  cargarRubros(); selectorRubro.value = '';
-  resultado.innerHTML = '<p class="mensaje-inicial">Selecciona un rubro para ver el estimado.</p>';
-});
-
+selectorCategoria.addEventListener('change', () => { cargarRubros(); selectorRubro.value = ''; });
 inputBuscar.addEventListener('input', () => {
-  const rubrosFiltrados = cargarRubros();
-  if (rubrosFiltrados.length > 0 && inputBuscar.value.length > 2) {
-    const primerRubro = rubrosFiltrados[0];
-    selectorRubro.value = primerRubro.id;
-    mostrarEstimado(primerRubro.id);
+  const f = cargarRubros();
+  if (f.length > 0 && inputBuscar.value.length > 2) {
+    selectorRubro.value = f[0].id;
+    mostrarEstimado(f[0].id);
   }
 });
-
-checkFavoritos.addEventListener('change', () => {
-  cargarRubros(); selectorRubro.value = '';
-  resultado.innerHTML = '<p class="mensaje-inicial">Selecciona un rubro para ver el estimado.</p>';
-});
-
-selectorRubro.addEventListener('change', (e) => {
-  mostrarEstimado(e.target.value);
-  inputBuscar.value = '';
-});
-
+checkFavoritos.addEventListener('change', () => { cargarRubros(); selectorRubro.value = ''; });
+selectorRubro.addEventListener('change', (e) => { mostrarEstimado(e.target.value); inputBuscar.value = ''; });
 btnActualizar.addEventListener('click', () => mostrarEstimado(selectorRubro.value));
 if (btnTasa) btnTasa.addEventListener('click', obtenerTasaBCV);
 
-// ------------------------------------------------------------
-// ESTADÍSTICAS (Visitas y Fecha)
-// ------------------------------------------------------------
-function iniciarEstadisticas() {
-  try {
-    let visitas = parseInt(localStorage.getItem('agroprecios_visitas')) || 0;
-    visitas++;
-    localStorage.setItem('agroprecios_visitas', visitas);
-    if (document.getElementById('visit-counter')) document.getElementById('visit-counter').textContent = `👁️ Visitas: ${visitas}`;
-
-    const ahora = new Date();
-    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-    let horas = ahora.getHours(); const ampm = horas >= 12 ? 'PM' : 'AM';
-    horas = horas % 12; horas = horas ? horas : 12;
-    let minutos = ahora.getMinutes(); minutos = minutos < 10 ? '0' + minutos : minutos;
-
-    if (document.getElementById('current-datetime')) {
-      document.getElementById('current-datetime').textContent = `📅 ${ahora.getDate()} ${meses[ahora.getMonth()]} ${ahora.getFullYear()} · 🕒 ${horas}:${minutos} ${ampm}`;
-    }
-  } catch (error) { console.log("Error estadísticas", error); }
-}
-
-// ------------------------------------------------------------
-// INICIO
-// ------------------------------------------------------------
 cargarMercados();
 cargarCategorias();
 cargarRubros();
 inputTasa.value = DATOS_AGRO.tasa_bcv;
 obtenerTasaBCV();
-iniciarEstadisticas();
+
+// ESTADÍSTICAS
+let visitas = parseInt(localStorage.getItem('agroprecios_visitas')) || 0;
+visitas++;
+localStorage.setItem('agroprecios_visitas', visitas);
+if (document.getElementById('visit-counter')) document.getElementById('visit-counter').textContent = `👁️ Visitas: ${visitas}`;
+if (document.getElementById('current-datetime')) {
+  const now = new Date();
+  document.getElementById('current-datetime').textContent = `📅 ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+}
