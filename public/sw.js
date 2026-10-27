@@ -1,5 +1,4 @@
-const CACHE_NAME = 'agroprecios-v1';
-const ASSETS = [
+const CACHE_NAME = 'agroprecios-v2';const ASSETS = [
   './',
   './index.html',
   './styles.css',
