@@ -1,4 +1,7 @@
 export default async function handler(req, res) {
+  // 1. Decirle a Vercel que NO guarde esta respuesta en caché
+  res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
+
   try {
     const resp = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
     const data = await resp.json();
